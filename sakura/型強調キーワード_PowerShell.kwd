@@ -1,0 +1,32 @@
+﻿// PowerShell キーワード定義ファイル
+// CASE=False
+
+array
+bool
+byte
+char
+datetime
+decimal
+double
+float
+guid
+hashtable
+int16
+int32
+int64
+int
+long
+nullable
+psobject
+regex
+sbyte
+scriptblock
+single
+string
+switch
+timespan
+type
+uint16
+uint32
+uint64
+xml

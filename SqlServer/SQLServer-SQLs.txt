@@ -1,0 +1,53 @@
+--テーブル名取得
+Select SO.Name		As TableName
+		,'Truncate Table [' + SO.Name + '];'
+From SYS.OBJECTS SO
+Where SO.TYPE = 'U'		--Just Only UserTable
+Order by SO.Name
+;
+
+
+Rollback;
+
+
+
+-- カラム名取得
+Select	SO.NAME						As TableName,
+		SC.NAME						As ColumnName ,
+		TYPE_NAME(SC.USER_TYPE_ID)	As ColumnType,
+		SC.COLUMN_ID				As ColumnId,
+		SC.MAX_LENGTH				As ColumnSize,
+		CASE SC.is_nullable WHEN 1 THEN '可' ELSE '不可' END 'NULL可',
+		SE.Value					As Comment
+From SYS.OBJECTS SO
+	Inner Join SYS.COLUMNS SC On
+		SO.OBJECT_ID = SC.OBJECT_ID
+	Left Join SYS. extended_properties SE On
+			SO.OBJECT_ID	= SE.Major_ID
+		and SC.COLUMN_ID	= SE.Minor_ID
+Where SO.TYPE = 'U'		--Just Only UserTable
+  and UPPER(SO.NAME) = UPPER('ProcessResultData')
+--  and UPPER(SC.NAME) = 'PRODUCTNAME'
+Order By	SO.NAME	,
+			SC.COLUMN_ID
+;
+
+Rollback;
+
+
+
+-- トリガー一覧取得
+SELECT Upper(tab.name) as table_name
+      ,Upper(trg.name) as trigger_name
+	  , CASE trg.is_disabled WHEN 0 THEN '有効' ELSE '無効' END AS 有効無効
+	  , 'ALTER TABLE ' + tab.name + ' DISABLE TRIGGER ' + trg.name + ';' AS トリガー無効化SQL
+      , 'ALTER TABLE ' + tab.name + ' ENABLE TRIGGER ' + trg.name + ';' AS トリガー有効化SQL
+FROM   sys.triggers trg 
+LEFT OUTER JOIN sys.tables tab ON 
+		trg.parent_id = tab.object_id 
+--Where trg.is_disabled <> 0
+ORDER BY tab.name
+        ,trg.name
+;
+
+RollBack;
