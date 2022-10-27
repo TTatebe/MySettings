@@ -1,8 +1,11 @@
+
+
 --テーブル名取得
 Select SO.Name		As TableName
 		,'Truncate Table [' + SO.Name + '];'
 From SYS.OBJECTS SO
 Where SO.TYPE = 'U'		--Just Only UserTable
+--  and SO.Name like '%_BKUtTest'
 Order by SO.Name
 ;
 
@@ -40,8 +43,8 @@ Rollback;
 SELECT Upper(tab.name) as table_name
       ,Upper(trg.name) as trigger_name
 	  , CASE trg.is_disabled WHEN 0 THEN '有効' ELSE '無効' END AS 有効無効
-	  , 'ALTER TABLE ' + tab.name + ' DISABLE TRIGGER ' + trg.name + ';' AS トリガー無効化SQL
-      , 'ALTER TABLE ' + tab.name + ' ENABLE TRIGGER ' + trg.name + ';' AS トリガー有効化SQL
+	  , 'ALTER TABLE [' + tab.name + '] DISABLE TRIGGER ' + trg.name + ';' AS トリガー無効化SQL
+      , 'ALTER TABLE [' + tab.name + '] ENABLE TRIGGER ' + trg.name + ';' AS トリガー有効化SQL
 FROM   sys.triggers trg 
 LEFT OUTER JOIN sys.tables tab ON 
 		trg.parent_id = tab.object_id 
@@ -51,3 +54,11 @@ ORDER BY tab.name
 ;
 
 RollBack;
+
+
+-- 全テーブルの統計情報更新
+sp_updatestats;
+Commit;
+
+-- カラム追加
+ALTER TABLE [テーブル1] ADD [カラム1] [データ型] [NULL or NOT NULL];
